@@ -14,6 +14,9 @@ public class MeleeEnemy extends Enemy {
 
     @Override
     public void update(float deltaTime) {
+        if (flashTimer > 0) {
+            flashTimer -= deltaTime;
+        }
         moveToPlayer();
         movement.update(deltaTime);
         updateEffects(deltaTime);

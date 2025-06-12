@@ -45,4 +45,10 @@ public class AnimationComponent {
     public boolean isActiveFinished() {
         return active.isFinished();
     }
+
+    public void clearAnimations() {
+        animators.clear();
+        active = null;
+        activeKey = null;
+    }
 }

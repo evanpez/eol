@@ -21,6 +21,7 @@ public class HealthComponent {
     }
 
     public void takeDamage(int amount) {
+        owner.triggerDamageFlash();
         if (owner instanceof Boss && currentHealth > 0) {
             currentHealth = Math.max(1, currentHealth - amount);
             return;

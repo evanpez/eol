@@ -45,6 +45,9 @@ public class Boss extends Enemy {
     }
 
     public void update(float deltaTime) {
+        if (flashTimer > 0) {
+            flashTimer -= deltaTime;
+        }
         anims.update(deltaTime);
         updateEffects(deltaTime);
 

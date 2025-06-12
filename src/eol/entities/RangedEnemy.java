@@ -14,6 +14,9 @@ public class RangedEnemy extends Enemy {
 
     @Override
     public void update(float deltaTime) {
+        if (flashTimer > 0) {
+            flashTimer -= deltaTime;
+        }
         // walk to 600 and start shooting
         if (position.getX() > 600) {
             movement.move(Vector2.left);
