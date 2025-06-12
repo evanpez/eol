@@ -63,7 +63,7 @@ public class EntitySpawner {
         Enemy e;
         switch (cfg.type) {
             case meleeBasic, meleeArmored, meleeKnight, meleeGiant ->
-                    e = new MeleeEnemy(enemySpawn, cfg.offset, cfg.width, cfg.height, entityManager, cfg.stats);
+                    e = new MeleeEnemy(enemySpawn, cfg.offset, cfg.width, cfg.height, entityManager, cfg.stats, cfg.type);
             case rangedBasic ->
                     e = new RangedEnemy(enemySpawn, cfg.offset, cfg.width, cfg.height, entityManager, cfg.stats);
             default -> {
@@ -107,7 +107,7 @@ public class EntitySpawner {
             }
         }
 
-        float giantChance = (5f - dexterity) / 5f;
+        float giantChance = Math.max(0f, (20f - dexterity) / 20f);
         if (random.nextFloat() < giantChance) {
             return EnemyType.meleeGiant;
         }
@@ -156,7 +156,7 @@ public class EntitySpawner {
         return type == EnemyType.meleeGiant ? 256 : 64;
     }
 
-    private enum EnemyType {meleeBasic, rangedBasic, meleeArmored, meleeKnight, meleeGiant}
+    public enum EnemyType {meleeBasic, rangedBasic, meleeArmored, meleeKnight, meleeGiant}
 
     private static class EnemyConfig {
         final EnemyType type;

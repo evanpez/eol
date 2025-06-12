@@ -17,6 +17,8 @@ public abstract class Enemy extends Character {
     public abstract void update(float deltaTime);
 
     public void moveToPlayer() {
+        float distanceToPlayer = Math.abs(player.getPosition().getX() - position.getX());
+        if (distanceToPlayer < 10) return;
         Vector2 direction = position.subtract(player.getPosition()).normalize();
         movement.move(direction);
     }

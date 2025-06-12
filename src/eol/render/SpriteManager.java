@@ -124,8 +124,11 @@ public class SpriteManager {
         for (int i = 0; i < 6; i++) {
             loadSprite("dust_projectile_" + i, "dust_projectile_" + i + ".png");
         }
+        loadSprite("beam", "beam.png");
 
         loadSprite("zombie_basic", "zombie_basic.png");
+        loadSprite("zombie_armored", "zombie_armored.png");
+        loadSprite("zombie_knight", "zombie_knight.png");
         loadSprite("zombie_ranged", "zombie_ranged.png");
 
         for (int i = 1; i <= 11; i++) {

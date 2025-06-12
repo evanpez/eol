@@ -15,8 +15,9 @@ import eol.utils.Vector2;
 public class BeamSpell extends Weapon {
     private Line2D beam;
     private float duration = 0.5f;
-    private float range = 900.0f;
+    private float range = 480.0f;
     private float remaining = 0.0f;
+    private boolean flipped;
     private Set<Enemy> enemiesHit = new HashSet<>();
 
     public BeamSpell() {
@@ -26,7 +27,10 @@ public class BeamSpell extends Weapon {
     @Override
     public void fire(CombatComponent combatComponent, InputHandler inputHandler, EntityManager entityManager, float deltaTime) {
         if (inputHandler.isAttackKeyPressed() && combatComponent.getCooldown() <= 0 && remaining <= 0 && beam == null) {
+            Vector2 dir = combatComponent.getOwner().getMovementComponent().getLastDirection();
+            flipped = dir.getX() < 0;
             remaining = duration;
+            combatComponent.setJustAttacked(true);
             enemiesHit.clear();
         }
     }
@@ -59,6 +63,10 @@ public class BeamSpell extends Weapon {
                 AudioManager.getInstance().playSound("hit");
             }
         }
+    }
+
+    public boolean isFlipped() {
+        return flipped;
     }
 
     public Line2D getBeam() {

@@ -11,12 +11,14 @@ import eol.weapons.Weapon;
 import eol.entities.*;
 import eol.entities.Character;
 import eol.logic.WaveManager;
+import eol.logic.EntitySpawner.EnemyType;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.util.ArrayList;
@@ -112,6 +114,34 @@ public class Renderer {
                 g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
             } 
             g2.dispose();
+
+            if (player.getWeapon() instanceof BeamSpell) {
+                BeamSpell beam = (BeamSpell)player.getWeapon();
+                if (beam.getBeam() != null) {
+                    Line2D line = beam.getBeam();
+                    Graphics2D g3 = (Graphics2D) g.create();
+                    BufferedImage beamSprite = SpriteManager.getInstance().getSprite("beam");
+
+                    int w = beamSprite.getWidth();
+                    int h = beamSprite.getHeight();
+                    
+                    int offset2;
+                    if (beam.isFlipped()) {
+                        offset2 = -250;
+                    } else {
+                        offset2 = 250;
+                    }
+                    g3.translate(line.getX1() + offset2, line.getY1());
+                    if (beam.isFlipped()) {
+                        g3.scale(-1, 0.5);
+                    } else {
+                        g3.scale(1, 0.5);
+                    }
+
+                    g3.drawImage(beamSprite, -w/2, -h/2, null);
+                    g3.dispose();
+                }
+            }
         }
 
         if (e instanceof Projectile) {
@@ -176,14 +206,36 @@ public class Renderer {
 
         if (e instanceof MeleeEnemy) {
             MeleeEnemy enemy = (MeleeEnemy)e;
-            BufferedImage frame = SpriteManager.getInstance().getSprite("zombie_basic");
+            SpriteManager spriteManager = SpriteManager.getInstance();
+            BufferedImage frame;
+            EnemyType type = enemy.getType();
+            switch (type) {
+                case meleeBasic -> frame = spriteManager.getSprite("zombie_basic");
+                case meleeArmored -> frame = spriteManager.getSprite("zombie_armored");
+                case meleeKnight -> frame = spriteManager.getSprite("zombie_knight");
+                case meleeGiant -> frame = spriteManager.getSprite("zombie_basic");
+                default -> frame = spriteManager.getSprite("zombie_basic");
+            }
+
             Rectangle bounds = enemy.getBounds();
           
-            double sx = 0.045;
-            double sy = 0.045;
+            int x, y;
+            double sx, sy, cx;
+            if (type == EnemyType.meleeGiant) {
+                sx = 0.16;
+                sy = 0.16;
+                cx = (bounds.x + bounds.width  / 2) - 20;
+                x = -frame.getWidth()  / 2;
+                y = -frame.getHeight() / 2 + 95;
+            } else {
+                sx = 0.045;
+                sy = 0.045;
+                cx = (bounds.x + bounds.width  / 2) - 5;
+                x = -frame.getWidth()  / 2;
+                y = -frame.getHeight() / 2 + 25;
+            }
 
             Graphics2D g2 = (Graphics2D) g.create();
-            int cx = bounds.x + bounds.width  / 2;
             int cy = bounds.y + bounds.height / 2;
             
             Vector2 input = enemy.getMovementComponent().getLastDirection();
@@ -196,9 +248,9 @@ public class Renderer {
             
             if (enemy.isFlashing()) {
                 BufferedImage red = getFlashedFrame(frame);
-                g2.drawImage(red, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+                g2.drawImage(red, x, y, null);
             } else {
-                g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+                g2.drawImage(frame, x, y, null);
             }
             
             g2.dispose();

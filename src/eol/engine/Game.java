@@ -106,6 +106,7 @@ public class Game {
         }
 
         waveManager.setWave(gs.wave);
+        entitySpawner.prepareWave(gs.wave);
         startGame();
     }
 
