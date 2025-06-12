@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 public class SpriteManager {
     private static String path = "/assets/sprites/";
     private static Map<String, BufferedImage> sprites = new HashMap<>();
+    private boolean loaded = false;
 
     private static SpriteManager instance;
 
@@ -46,21 +47,64 @@ public class SpriteManager {
         for (int i = 0; i < 8; i++) {
             loadSprite("boss_idle_" + i, "boss_idle_" + i + ".png");
         }
-        for (int i = 0; i < 1; i++) {
-            loadSprite("knight_sword_idle_" + i, "knight_sword_idle_" + i + ".png");
-        }
+
+        loadSprite("knight_sword_idle_0", "knight_sword_idle_0.png");
+        loadSprite("knight_greatsword_idle_0", "knight_greatsword_idle_0.png");
+        loadSprite("knight_dagger_idle_0", "knight_dagger_idle_0.png");
+        loadSprite("knight_plasma_idle_0", "knight_plasma_idle_0.png");
+        loadSprite("knight_cannon_idle_0", "knight_cannon_idle_0.png");
+        
         for (int i = 0; i < 3; i++) {
             loadSprite("knight_sword_walk_" + i, "knight_sword_walk_" + i + ".png");
         }
         for (int i = 0; i < 3; i++) {
+            loadSprite("knight_greatsword_walk_" + i, "knight_greatsword_walk_" + i + ".png");
+        }
+        for (int i = 0; i < 3; i++) {
+            loadSprite("knight_dagger_walk_" + i, "knight_dagger_walk_" + i + ".png");
+        }
+        for (int i = 0; i < 2; i++) {
+            loadSprite("knight_plasma_walk_" + i, "knight_plasma_walk_" + i + ".png");
+        }
+        for (int i = 0; i < 2; i++) {
+            loadSprite("knight_cannon_walk_" + i, "knight_cannon_walk_" + i + ".png");
+        }
+
+
+        for (int i = 0; i < 3; i++) {
             loadSprite("knight_sword_jump_" + i, "knight_sword_jump_" + i + ".png");
         }
+        for (int i = 0; i < 3; i++) {
+            loadSprite("knight_greatsword_jump_" + i, "knight_greatsword_jump_" + i + ".png");
+        }
+        for (int i = 0; i < 3; i++) {
+            loadSprite("knight_dagger_jump_" + i, "knight_dagger_jump_" + i + ".png");
+        }
+        for (int i = 0; i < 3; i++) {
+            loadSprite("knight_plasma_jump_" + i, "knight_plasma_jump_" + i + ".png");
+        }
+        for (int i = 0; i < 3; i++) {
+            loadSprite("knight_cannon_jump_" + i, "knight_cannon_jump_" + i + ".png");
+        }
+
+
         for (int i = 0; i < 8; i++) {
             loadSprite("knight_sword_attack_" + i, "knight_sword_attack_" + i + ".png");
         }
-        for (int i = 0; i < 1; i++) {
-            loadSprite("mage_idle_" + i, "mage_idle_" + i + ".png");
+        for (int i = 0; i < 10; i++) {
+            loadSprite("knight_greatsword_attack_" + i, "knight_greatsword_attack_" + i + ".png");
         }
+        for (int i = 0; i < 7; i++) {
+            loadSprite("knight_dagger_attack_" + i, "knight_dagger_attack_" + i + ".png");
+        }
+        for (int i = 0; i < 8; i++) {
+            loadSprite("knight_plasma_attack_" + i, "knight_plasma_attack_" + i + ".png");
+        }
+        for (int i = 0; i < 3; i++) {
+            loadSprite("knight_cannon_attack_" + i, "knight_cannon_attack_" + i + ".png");
+        }
+
+        loadSprite("mage_idle_0", "mage_idle_0.png");
         for (int i = 0; i < 3; i++) {
             loadSprite("mage_walk_" + i, "mage_walk_" + i + ".png");
         }
@@ -80,8 +124,11 @@ public class SpriteManager {
         for (int i = 0; i < 6; i++) {
             loadSprite("dust_projectile_" + i, "dust_projectile_" + i + ".png");
         }
+        loadSprite("beam", "beam.png");
 
         loadSprite("zombie_basic", "zombie_basic.png");
+        loadSprite("zombie_armored", "zombie_armored.png");
+        loadSprite("zombie_knight", "zombie_knight.png");
         loadSprite("zombie_ranged", "zombie_ranged.png");
 
         for (int i = 1; i <= 11; i++) {
@@ -97,26 +144,36 @@ public class SpriteManager {
         loadSprite("defense_ally", "defense_ally.png");
 
         // Add more as needed
+        loaded = true;
+    }
+
+    public boolean isLoaded() {
+        return loaded;
     }
 
     public BufferedImage[] getPlayerIdle(String playerType, String weapon) {
+        BufferedImage[] frames = new BufferedImage[1];
         if (playerType.equals("melee")) {
             if (weapon.equals("starter_sword")) {
-                BufferedImage[] frames = new BufferedImage[1];
                 frames[0] = getSprite("knight_sword_idle_0");
-                return frames;
             } else if (weapon.equals("greatsword")) {
-
+                frames[0] = getSprite("knight_greatsword_idle_0");
+            } else if (weapon.equals("dagger")) {
+                frames[0] = getSprite("knight_dagger_idle_0");
+            } else if (weapon.equals("plasma_sword")) {
+                frames[0] = getSprite("knight_plasma_idle_0");
+            } else {
+                frames[0] = getSprite("knight_cannon_idle_0");
             }
-        } else {
-           BufferedImage[] frames = new BufferedImage[1];
+        } else if (playerType.equals("ranged")) {
+            frames = new BufferedImage[1];
             frames[0] = getSprite("mage_idle_0");
-            return frames;
+        } else {
+            return getPlayerIdle("melee", "starter_sword");
         }
-        return null;
+        return frames;
     }
 
-    
     public BufferedImage[] getPlayerWalk(String playerType, String weapon) {
         if (playerType.equals("melee")) {
             if (weapon.equals("starter_sword")) {
@@ -126,16 +183,38 @@ public class SpriteManager {
                 }
                 return frames;
             } else if (weapon.equals("greatsword")) {
-
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_greatsword_walk_" + i);
+                }
+                return frames;
+            } else if (weapon.equals("dagger")) {
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_dagger_walk_" + i);
+                }
+                return frames;
+            } else if (weapon.equals("plasma_sword")) {
+                BufferedImage[] frames = new BufferedImage[2];
+                for (int i = 0; i < 2; i++) {
+                    frames[i] = getSprite("knight_plasma_walk_" + i);
+                }
+                return frames;
+            } else {
+                BufferedImage[] frames = new BufferedImage[2];
+                for (int i = 0; i < 2; i++) {
+                    frames[i] = getSprite("knight_cannon_walk_" + i);
+                }
+                return frames;
             }
-        } else {
+        } else if (playerType.equals("ranged")) {
             BufferedImage[] frames = new BufferedImage[3];
             for (int i = 0; i < 3; i++) {
                 frames[i] = getSprite("mage_walk_" + i);
             }
             return frames;
         }
-        return null;
+        return getPlayerWalk("melee", "starter_sword");
     }
 
     public BufferedImage[] getPlayerAttack(String playerType, String weapon) {
@@ -147,16 +226,38 @@ public class SpriteManager {
                 }
                 return frames;
             } else if (weapon.equals("greatsword")) {
-
+                BufferedImage[] frames = new BufferedImage[10];
+                for (int i = 0; i < 10; i++) {
+                    frames[i] = getSprite("knight_greatsword_attack_" + i);
+                }
+                return frames;
+            } else if (weapon.equals("dagger")) {
+                BufferedImage[] frames = new BufferedImage[7];
+                for (int i = 0; i < 7; i++) {
+                    frames[i] = getSprite("knight_dagger_attack_" + i);
+                }
+                return frames;
+            } else if (weapon.equals("plasma_sword")) {
+                BufferedImage[] frames = new BufferedImage[8];
+                for (int i = 0; i < 8; i++) {
+                    frames[i] = getSprite("knight_plasma_attack_" + i);
+                }
+                return frames;
+            } else {
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_cannon_attack_" + i);
+                }
+                return frames;
             }
-        } else {
+        } else if (playerType.equals("ranged")) {
             BufferedImage[] frames = new BufferedImage[2];
             for (int i = 0; i < 2; i++) {
                 frames[i] = getSprite("mage_attack_" + i);
             }
             return frames;
         }
-        return null;
+        return getPlayerAttack("melee", "starter_sword");
     }
 
     public BufferedImage[] getPlayerJump(String playerType, String weapon) {
@@ -168,16 +269,38 @@ public class SpriteManager {
                 }
                 return frames;
             } else if (weapon.equals("greatsword")) {
-
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_greatsword_jump_" + i);
+                }
+                return frames;
+            } else if (weapon.equals("dagger")) {
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_dagger_jump_" + i);
+                }
+                return frames;
+            } else if (weapon.equals("plasma_sword")) {
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_plasma_jump_" + i);
+                }
+                return frames;
+            } else {
+                BufferedImage[] frames = new BufferedImage[3];
+                for (int i = 0; i < 3; i++) {
+                    frames[i] = getSprite("knight_cannon_jump_" + i);
+                }
+                return frames;
             }
-        } else {
+        } else if (playerType.equals("ranged")) {
            BufferedImage[] frames = new BufferedImage[3];
             for (int i = 0; i < 3; i++) {
                 frames[i] = getSprite("mage_jump_" + i);
             }
             return frames; 
         }
-        return null;
+        return getPlayerJump("melee", "starter_sword");
     }
     
 

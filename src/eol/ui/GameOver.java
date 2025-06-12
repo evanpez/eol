@@ -2,6 +2,7 @@ package eol.ui;
 
 import javax.swing.*;
 
+import eol.audio.AudioManager;
 import eol.logic.SaveManager;
 
 import java.awt.*;
@@ -21,6 +22,7 @@ public class GameOver {
         if (won) {
             text = "YOU WIN!";
         } else {
+            AudioManager.getInstance().playSound("epicFail");
             text = "HAHAHA YOU LOSE!";
         }
         initialize(won);
@@ -96,5 +98,6 @@ public class GameOver {
 
     public void show() {
         frame.setVisible(true);
+        AudioManager.getInstance().stopMusic();
     }
 }

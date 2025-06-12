@@ -11,19 +11,27 @@ import eol.weapons.Weapon;
 import eol.entities.*;
 import eol.entities.Character;
 import eol.logic.WaveManager;
+import eol.logic.EntitySpawner.EnemyType;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Renderer {
     private EntityManager entityManager;
     private WaveManager waveManager;
+    private final Map<BufferedImage,BufferedImage> tintedCache = new HashMap<>();
     private Font waveFont = new Font("Martian Mono", Font.BOLD, 32);
+    private Font bossFont = new Font("Martian Mono", Font.PLAIN, 20);
 
     // Bounding box colors
     private static final Color playerDebugColor = new Color(0, 0, 255, 64);
@@ -46,9 +54,13 @@ public class Renderer {
         }
 
         renderGround(g);
-        renderHealthBar(g);
+        renderPlayerHealthBar(g);
         g.setFont(waveFont);
-        drawBorderString("WAVE: " + waveManager.getWave(), 510, 100, Color.WHITE, Color.BLACK, g);
+        drawBorderString("WAVE: " + waveManager.getWave(), 550, 100, Color.WHITE, Color.BLACK, g);
+
+        if (entityManager.getBoss() != null) {
+            renderBossHealthBar(g);
+        }
 
         // Draw debug info
         if (debugMode) {
@@ -61,7 +73,12 @@ public class Renderer {
             Boss boss = (Boss) e;
             BufferedImage frame = boss.getAnimationComponent().getActive().getCurrentFrame();
             Rectangle bounds = boss.getBounds();
-            g.drawImage(frame, (int) bounds.getX(), (int) bounds.getY(), null);
+            if (boss.isFlashing()) {
+                BufferedImage red = getFlashedFrame(frame);
+                g.drawImage(red, (int) bounds.getX(), (int) bounds.getY(), null);
+            } else {
+                g.drawImage(frame, (int) bounds.getX(), (int) bounds.getY(), null);
+            }
         }
 
         if (e instanceof Player) {
@@ -89,10 +106,42 @@ public class Renderer {
             } else {
                 g2.scale(sx, sy);
             }
-            
-            g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
-            
+
+            if (player.isFlashing()) {
+                BufferedImage red = getFlashedFrame(frame);
+                g2.drawImage(red, -frame.getWidth() / 2, -frame.getHeight() / 2 + 25, null);
+            } else {
+                g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+            } 
             g2.dispose();
+
+            if (player.getWeapon() instanceof BeamSpell) {
+                BeamSpell beam = (BeamSpell)player.getWeapon();
+                if (beam.getBeam() != null) {
+                    Line2D line = beam.getBeam();
+                    Graphics2D g3 = (Graphics2D) g.create();
+                    BufferedImage beamSprite = SpriteManager.getInstance().getSprite("beam");
+
+                    int w = beamSprite.getWidth();
+                    int h = beamSprite.getHeight();
+                    
+                    int offset2;
+                    if (beam.isFlipped()) {
+                        offset2 = -250;
+                    } else {
+                        offset2 = 250;
+                    }
+                    g3.translate(line.getX1() + offset2, line.getY1());
+                    if (beam.isFlipped()) {
+                        g3.scale(-1, 0.5);
+                    } else {
+                        g3.scale(1, 0.5);
+                    }
+
+                    g3.drawImage(beamSprite, -w/2, -h/2, null);
+                    g3.dispose();
+                }
+            }
         }
 
         if (e instanceof Projectile) {
@@ -157,14 +206,36 @@ public class Renderer {
 
         if (e instanceof MeleeEnemy) {
             MeleeEnemy enemy = (MeleeEnemy)e;
-            BufferedImage frame = SpriteManager.getInstance().getSprite("zombie_basic");
+            SpriteManager spriteManager = SpriteManager.getInstance();
+            BufferedImage frame;
+            EnemyType type = enemy.getType();
+            switch (type) {
+                case meleeBasic -> frame = spriteManager.getSprite("zombie_basic");
+                case meleeArmored -> frame = spriteManager.getSprite("zombie_armored");
+                case meleeKnight -> frame = spriteManager.getSprite("zombie_knight");
+                case meleeGiant -> frame = spriteManager.getSprite("zombie_basic");
+                default -> frame = spriteManager.getSprite("zombie_basic");
+            }
+
             Rectangle bounds = enemy.getBounds();
           
-            double sx = 0.045;
-            double sy = 0.045;
+            int x, y;
+            double sx, sy, cx;
+            if (type == EnemyType.meleeGiant) {
+                sx = 0.16;
+                sy = 0.16;
+                cx = (bounds.x + bounds.width  / 2) - 20;
+                x = -frame.getWidth()  / 2;
+                y = -frame.getHeight() / 2 + 95;
+            } else {
+                sx = 0.045;
+                sy = 0.045;
+                cx = (bounds.x + bounds.width  / 2) - 5;
+                x = -frame.getWidth()  / 2;
+                y = -frame.getHeight() / 2 + 25;
+            }
 
             Graphics2D g2 = (Graphics2D) g.create();
-            int cx = bounds.x + bounds.width  / 2;
             int cy = bounds.y + bounds.height / 2;
             
             Vector2 input = enemy.getMovementComponent().getLastDirection();
@@ -175,7 +246,12 @@ public class Renderer {
                 g2.scale(sx, sy);
             }
             
-            g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+            if (enemy.isFlashing()) {
+                BufferedImage red = getFlashedFrame(frame);
+                g2.drawImage(red, x, y, null);
+            } else {
+                g2.drawImage(frame, x, y, null);
+            }
             
             g2.dispose();
         }
@@ -200,13 +276,18 @@ public class Renderer {
                 g2.scale(sx, sy);
             }
             
-            g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+            if (enemy.isFlashing()) {
+                BufferedImage red = getFlashedFrame(frame);
+                g2.drawImage(red, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+            } else {
+                g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+            }
             
             g2.dispose();
         }
     }
 
-    public void renderHealthBar(Graphics2D g) {
+    public void renderPlayerHealthBar(Graphics2D g) {
         g.setColor(Color.BLACK);
         g.drawRect(490, 30, 280, 35);
         g.setColor(Color.DARK_GRAY);
@@ -238,6 +319,23 @@ public class Renderer {
         g.setColor(new Color(red, green, 0));
         int barWidth = (int)(279 * healthRatio);
         g.fillRect(491, 31, barWidth, 34);
+    }
+
+    public void renderBossHealthBar(Graphics2D g) {
+        g.setColor(Color.BLACK);
+        g.drawRect(30, 30, 280, 35);
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(31, 31, 279, 34);
+        int maxHealth = entityManager.getBoss().getHealthComponent().getMaxHealth();
+        int currentHealth = entityManager.getBoss().getHealthComponent().getCurrentHealth();
+        float healthRatio = (float) currentHealth / maxHealth;
+
+        g.setColor(new Color(180, 0, 0, 255));
+        int barWidth = (int)(279 * healthRatio);
+        g.fillRect(31, 31, barWidth, 34);
+
+        g.setFont(bossFont);
+        drawBorderString("Echo, the Undying", 35, 90, Color.WHITE, Color.BLACK, g);
     }
 
     public void renderBackground(Graphics2D g) {
@@ -370,6 +468,23 @@ public class Renderer {
 
         g.setColor(textColor);
         g.drawString(text, x, y);
+    }
+
+    private BufferedImage tintImage(BufferedImage src) {
+        BufferedImage tinted = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TRANSLUCENT);
+        Graphics2D g = tinted.createGraphics();
+        g.drawImage(src, 0, 0, null);
+        
+        g.setComposite(AlphaComposite.SrcAtop);
+        g.setColor(new Color(255, 0, 0, 180));
+        g.fillRect(0, 0, src.getWidth(), src.getHeight());
+
+        g.dispose();
+        return tinted;
+    }
+
+    private BufferedImage getFlashedFrame(BufferedImage src) {
+        return tintedCache.computeIfAbsent(src, this::tintImage);
     }
 
 }

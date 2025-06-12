@@ -20,11 +20,10 @@ public class LightCannon extends Weapon {
     public void fire(CombatComponent combatComponent, InputHandler inputHandler, EntityManager entityManager, float deltaTime) {
         if (!inputHandler.isAttackKeyDown() || combatComponent.getCooldown() > 0) return;
         combatComponent.setJustAttacked(true);
-        //AudioManager.getInstance().playSfx("shoot");
         Character owner = combatComponent.getOwner();
 
         float baseAngle = 0.0f;
-        float spreadStep = (float) (Math.PI / 12);
+        float spreadStep = (float) (Math.PI / 24);
         float startAngle = baseAngle - spreadStep * (count - 1) / 2f;
         float spawnDistance = -15f;
 

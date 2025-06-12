@@ -18,6 +18,7 @@ public abstract class Character extends GameEntity {
     protected final HealthComponent health;
     protected CombatComponent combat;
     protected Set<Effect> effects;
+    protected float flashTimer;
 
     public Character(Vector2 position, Vector2 offset, int width, int height, StatsComponent stats) {
         super(position, offset, width, height);
@@ -63,6 +64,14 @@ public abstract class Character extends GameEntity {
                 it.remove();
             }
         }
+    }
+
+    public void triggerDamageFlash() {
+        flashTimer = 0.2f;
+    }
+
+    public boolean isFlashing() {
+        return flashTimer > 0;
     }
 
     public abstract void update(float deltaTime);

@@ -44,8 +44,8 @@ public class AudioManager {
     public void loadMusic(String id, String file) {
         Clip clip = createClip("/assets/music/" + file);
         if (clip != null) {
-            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-5.0f);
+            //FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            //gainControl.setValue(-5.0f);
             music.put(id, clip);
             System.out.println("Loaded music: " + id);
         }
@@ -142,6 +142,7 @@ public class AudioManager {
         loadSound("newWave", "newWave.wav", 1);
         loadSound("burnTick", "burnTick.wav", 6);
         loadSound("beamShoot", "beamShoot.wav", 3);
+        loadSound("epicFail", "epicFail.wav", 1);
     
         // load more as needed
     }

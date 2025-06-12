@@ -2,6 +2,7 @@ package eol.ui;
 
 import eol.audio.AudioManager;
 import eol.engine.Game;
+import eol.render.SpriteManager;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -347,15 +348,34 @@ public class MainMenu {
     }
 
     public void startNewGame(String playerType, boolean newGamePlus) {
-        Game game = new Game();
-        game.newGame(playerType, newGamePlus);
-        mainMenuFrame.setVisible(false);
-        mainMenuFrame.dispose();
+        if (!SpriteManager.getInstance().isLoaded()) {
+            mainMenuFrame.setVisible(false);
+            Loading loading = new Loading(this, playerType, newGamePlus);
+            loading.show();
+            loading.check(true);
+        } else {
+            Game game = new Game();
+            game.newGame(playerType, newGamePlus);
+            mainMenuFrame.setVisible(false);
+            mainMenuFrame.dispose();
+        }
     }
 
     public void startSavedGame() {
-        Game game = new Game();
-        game.loadGame();
+        if (!SpriteManager.getInstance().isLoaded()) {
+            mainMenuFrame.setVisible(false);
+            Loading loading = new Loading(this);
+            loading.show();
+            loading.check(false);
+        } else {
+            Game game = new Game();
+            game.loadGame();
+            mainMenuFrame.setVisible(false);
+            mainMenuFrame.dispose();
+        }
+    }
+
+    public void hide() {
         mainMenuFrame.setVisible(false);
         mainMenuFrame.dispose();
     }

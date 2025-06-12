@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import javax.swing.SwingUtilities;
 
+import eol.audio.AudioManager;
 import eol.components.StatsComponent;
 import eol.entities.*;
 import eol.entities.Character;

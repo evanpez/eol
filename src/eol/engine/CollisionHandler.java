@@ -75,15 +75,14 @@ public class CollisionHandler {
                     if (!b1.intersects(b2)) continue;
 
                     Vector2 delta = c.getPosition().subtract(other.getPosition());
-                    // if exactly overlapping, pick a default push on X
                     if (delta.magnitude() == 0) {
                         delta = new Vector2(1, 0);
                     }
                     Vector2 push = delta.normalize().multiply(1f); // 1px separation
 
                     // move both apart
-                    c.getMovementComponent().move(push.multiply(-1));
-                    other.getMovementComponent().move(push);
+                    c.getMovementComponent().push(push.multiply(-100), 0.01f);
+                    other.getMovementComponent().push(push.multiply(100), 0.01f);
                 }
             }
         }

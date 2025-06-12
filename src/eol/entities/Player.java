@@ -29,22 +29,16 @@ public class Player extends Character {
         this.weapon = weapon;
         autoAim = false;
 
-        BufferedImage[] idleFrames = SpriteManager.getInstance().getPlayerIdle(playerType, weapon.getId());
-        BufferedImage[] walkFrames = SpriteManager.getInstance().getPlayerWalk(playerType, weapon.getId());
-        BufferedImage[] jumpFrames = SpriteManager.getInstance().getPlayerJump(playerType, weapon.getId());
-        BufferedImage[] attackFrames = SpriteManager.getInstance().getPlayerAttack(playerType, weapon.getId());
-
-        anims.addAnimation("idle", new Animator(idleFrames, 0.2f));
-        anims.addAnimation("walk", new Animator(walkFrames, 0.2f));
-        anims.addAnimation("jump", new Animator(jumpFrames, 0.2f));
-        anims.addAnimation("attack", new Animator(attackFrames, 0.03f));
-
         this.combat = new CombatComponent(this, 10, 1.5f, playerType, weapon);
         //combat.initPhaseTimes(anims.get("attack").getFrameDuration());
 
+        setAnimations();
     }
 
     public void update(float deltaTime) {
+        if (flashTimer > 0) {
+            flashTimer -= deltaTime;
+        }
         movement.update(deltaTime);
         handleAnimations();
         anims.update(deltaTime);
@@ -84,6 +78,7 @@ public class Player extends Character {
         int[] stats = weapon.getStats();
         setWeaponStats(stats);
         combat.setWeapon(weapon);
+        setAnimations();
     }
 
     public void setWeaponStats(int[] newStats) {
@@ -104,6 +99,23 @@ public class Player extends Character {
     }
 
     public void setAnimations() {
-        
+        anims.clearAnimations();
+
+        BufferedImage[] idleFrames = SpriteManager.getInstance().getPlayerIdle(playerType, weapon.getId());
+        BufferedImage[] walkFrames = SpriteManager.getInstance().getPlayerWalk(playerType, weapon.getId());
+        BufferedImage[] jumpFrames = SpriteManager.getInstance().getPlayerJump(playerType, weapon.getId());
+        BufferedImage[] attackFrames = SpriteManager.getInstance().getPlayerAttack(playerType, weapon.getId());
+
+        float attackFrameDuration;
+        if (playerType.equals("melee")) {
+            attackFrameDuration = 0.04f;
+        } else {
+            attackFrameDuration = 0.09f;
+        }
+
+        anims.addAnimation("idle", new Animator(idleFrames, 0.2f));
+        anims.addAnimation("walk", new Animator(walkFrames, 0.1f));
+        anims.addAnimation("jump", new Animator(jumpFrames, 0.15f));
+        anims.addAnimation("attack", new Animator(attackFrames, attackFrameDuration));
     }
 }

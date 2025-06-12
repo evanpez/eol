@@ -34,6 +34,7 @@ public class ItemPanel {
     }
 
     public void showItems(List<Item> itemSet) {
+        AudioManager.getInstance().playSound("newWave");
         items.clear();
         items.addAll(itemSet);
         selectedIndex = 0;
