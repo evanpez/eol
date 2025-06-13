@@ -75,7 +75,10 @@ public class WaveManager {
                     AudioManager.getInstance().playMusic("songFour");
                     break;
                 case 20:
-                    Boss boss = new Boss(new Vector2(400, -100), new Vector2(-42.5f, -47), 85, 94, entityManager, new StatsComponent(100, 1, 5, 1));
+                    StatsComponent stats = player.getStatsComponent();
+                    int health = (stats.getStrength() + stats.getDexterity()) * 3;
+                    int strength = player.getStatsComponent().getHealth() / 2;
+                    Boss boss = new Boss(new Vector2(400, -100), new Vector2(-42.5f, -47), 85, 94, entityManager, new StatsComponent(health, 1, strength, 1));
                     entityManager.addEntity(boss);
                     bossSpawned = true;
                     AudioManager.getInstance().stopMusic();
@@ -83,8 +86,6 @@ public class WaveManager {
                     break;
             }
             triggeredWaves.add(currentWave);
-            int[] newStats = player.getWeapon().getStats();
-            player.setWeaponStats(newStats);
         }
     }
 

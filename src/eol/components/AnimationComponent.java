@@ -19,13 +19,15 @@ public class AnimationComponent {
     }
 
     public void play(String key, boolean looping) {
-        if (!key.equals(activeKey)) {
-            Animator next = animators.get(key);
-            next.setLooping(looping);
+        Animator next = animators.get(key);
+        next.setLooping(looping);
+
+        if (!looping || next != active) {
             next.reset();
-            active = next;
-            activeKey = key;
         }
+
+        active = next;
+        activeKey = key;
     }
 
     public Animator get(String key) { return animators.get(key); }

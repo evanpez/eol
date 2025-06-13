@@ -143,6 +143,7 @@ public class AudioManager {
         loadSound("burnTick", "burnTick.wav", 6);
         loadSound("beamShoot", "beamShoot.wav", 3);
         loadSound("epicFail", "epicFail.wav", 1);
+        loadSound("bossScream", "bossScream.wav", 1);
     
         // load more as needed
     }

@@ -117,12 +117,20 @@ public class SpriteManager {
         for (int i = 0; i < 6; i++) {
             loadSprite("projectile_" + i, "projectile_" + i + ".png");
         }
-
+        for (int i = 0; i < 6; i++) {
+            loadSprite("mage_projectile_" + i, "mage_projectile_" + i + ".png");
+        }
         for (int i = 0; i < 6; i++) {
             loadSprite("black_flame_projectile_" + i, "black_flame_projectile_" + i + ".png");
         }
         for (int i = 0; i < 6; i++) {
-            loadSprite("dust_projectile_" + i, "dust_projectile_" + i + ".png");
+            loadSprite("boss_projectile_" + i, "boss_projectile_" + i + ".png");
+        }
+        for (int i = 0; i < 6; i++) {
+            loadSprite("support_projectile_" + i, "support_projectile_" + i + ".png");
+        }
+        for (int i = 0; i < 6; i++) {
+            loadSprite("ash_projectile_" + i, "ash_projectile_" + i + ".png");
         }
         loadSprite("beam", "beam.png");
 
@@ -134,9 +142,14 @@ public class SpriteManager {
         for (int i = 1; i <= 11; i++) {
             loadSprite("item_" + i, "item_" + i + ".png");
         }
+        loadSprite("trap_active", "trap_active.png");
+        loadSprite("trap_triggered", "trap_triggered.png");
 
         for (int i = 0; i < 5; i++) {
             loadSprite("background_" + i, "background_" + i + ".png");
+        }
+        for (int i = 0; i < 5; i++) {
+            loadSprite("ground_" + i, "ground_" + i + ".png");
         }
 
         loadSprite("healer_ally", "healer_ally.png");

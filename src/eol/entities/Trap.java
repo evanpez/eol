@@ -68,5 +68,9 @@ public class Trap extends GameEntity {
         return alive;
     }
 
+    public boolean isTriggered() {
+        return triggered;
+    }
+
 
 }
