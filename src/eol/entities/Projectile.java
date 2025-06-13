@@ -43,10 +43,30 @@ public class Projectile extends GameEntity {
             for (int i = 0; i < 6; i++) {
                 frames[i] = SpriteManager.getInstance().getSprite("black_flame_projectile_" + i);
             }
-        } else {
+        } else if (owner == player && player.getWeapon() instanceof StormSpell){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("ash_projectile_" + i);
+            }
+        } else if (owner instanceof RangedEnemy){
             frames = new BufferedImage[6];
             for (int i = 0; i < 6; i++) {
                 frames[i] = SpriteManager.getInstance().getSprite("projectile_" + i);
+            }
+        } else if (owner instanceof Boss){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("boss_projectile_" + i);
+            }
+        } else if (owner instanceof SupportAlly){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("support_projectile_" + i);
+            }
+        } else {
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("mage_projectile_" + i);
             }
         }
 
@@ -63,6 +83,10 @@ public class Projectile extends GameEntity {
 
     public Vector2 getVelocity() {
         return velocity;
+    }
+
+    public Character getOwner() {
+        return owner;
     }
 
     public void update(float deltaTime) {

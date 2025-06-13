@@ -215,6 +215,7 @@ public class Boss extends Enemy {
     private void deathAnimation(float deltaTime) {
         if (!rising) {
             rising = true;
+            AudioManager.getInstance().playSound("bossScream");
         }
 
         position = position.add(new Vector2(0f, -1.5f));

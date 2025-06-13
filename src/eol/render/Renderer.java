@@ -29,7 +29,7 @@ import java.util.Map;
 public class Renderer {
     private EntityManager entityManager;
     private WaveManager waveManager;
-    private final Map<BufferedImage,BufferedImage> tintedCache = new HashMap<>();
+    private final Map<BufferedImage,BufferedImage> tintedCacheRed = new HashMap<>();
     private Font waveFont = new Font("Martian Mono", Font.BOLD, 32);
     private Font bossFont = new Font("Martian Mono", Font.PLAIN, 20);
 
@@ -53,7 +53,7 @@ public class Renderer {
             renderEntity(g, e);
         }
 
-        renderGround(g);
+        //renderGround(g);
         renderPlayerHealthBar(g);
         g.setFont(waveFont);
         drawBorderString("WAVE: " + waveManager.getWave(), 550, 100, Color.WHITE, Color.BLACK, g);
@@ -74,7 +74,7 @@ public class Renderer {
             BufferedImage frame = boss.getAnimationComponent().getActive().getCurrentFrame();
             Rectangle bounds = boss.getBounds();
             if (boss.isFlashing()) {
-                BufferedImage red = getFlashedFrame(frame);
+                BufferedImage red = getRedFrame(frame);
                 g.drawImage(red, (int) bounds.getX(), (int) bounds.getY(), null);
             } else {
                 g.drawImage(frame, (int) bounds.getX(), (int) bounds.getY(), null);
@@ -85,7 +85,7 @@ public class Renderer {
             Player player = (Player)e;
             BufferedImage frame = player.getAnimationComponent().getActive().getCurrentFrame();
             Rectangle bounds = player.getBounds();
-          
+            
             double sx = 0.045;
             double sy = 0.045;
 
@@ -108,7 +108,7 @@ public class Renderer {
             }
 
             if (player.isFlashing()) {
-                BufferedImage red = getFlashedFrame(frame);
+                BufferedImage red = getRedFrame(frame);
                 g2.drawImage(red, -frame.getWidth() / 2, -frame.getHeight() / 2 + 25, null);
             } else {
                 g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
@@ -247,7 +247,7 @@ public class Renderer {
             }
             
             if (enemy.isFlashing()) {
-                BufferedImage red = getFlashedFrame(frame);
+                BufferedImage red = getRedFrame(frame);
                 g2.drawImage(red, x, y, null);
             } else {
                 g2.drawImage(frame, x, y, null);
@@ -269,7 +269,7 @@ public class Renderer {
             int cy = bounds.y + bounds.height / 2;
             
             Vector2 input = enemy.getMovementComponent().getLastDirection();
-            g2.translate(cx, cy - 3);
+            g2.translate(cx, cy - 8);
             if (input.getX()<0) {
                 g2.scale(-sx, sy);
             } else {
@@ -277,12 +277,64 @@ public class Renderer {
             }
             
             if (enemy.isFlashing()) {
-                BufferedImage red = getFlashedFrame(frame);
+                BufferedImage red = getRedFrame(frame);
                 g2.drawImage(red, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
             } else {
                 g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
             }
             
+            g2.dispose();
+        }
+
+        if (e instanceof Trap) {
+            Trap trap = (Trap)e;
+            Rectangle bounds = trap.getBounds();
+            BufferedImage frame;
+            if (trap.isTriggered()) {
+                frame = SpriteManager.getInstance().getSprite("trap_triggered");
+            } else {
+                frame = SpriteManager.getInstance().getSprite("trap_active");
+            }
+
+            double sx = 0.045;
+            double sy = 0.045;
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            int cx = bounds.x + bounds.width  / 2;
+            int cy = bounds.y + bounds.height / 2;
+
+            g2.translate(cx, cy - 29);
+            g2.scale(sx, sy);
+
+            g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2 + 25, null);
+            g2.dispose();
+        }
+
+        if (e instanceof Ground) {
+            Ground ground = (Ground)e;
+            Rectangle bounds = ground.getBounds();
+            int wave = waveManager.getWave();
+            BufferedImage frame;
+            SpriteManager sm = SpriteManager.getInstance();
+            if (wave < 5) {
+                frame = sm.getSprite("ground_0");
+            } else if (wave < 10) {
+                frame = sm.getSprite("ground_1");
+            } else if (wave < 15) {
+                frame = sm.getSprite("ground_2");
+            } else if (wave <= 19) {
+                frame = sm.getSprite("ground_3");
+            } else {
+                frame = sm.getSprite("ground_4");
+            }
+
+            Graphics2D g2 = (Graphics2D) g.create();
+            int cx = bounds.x + bounds.width  / 2;
+            int cy = bounds.y + bounds.height / 2;
+
+            g2.translate(cx, cy);
+
+            g2.drawImage(frame, -frame.getWidth()  / 2, -frame.getHeight() / 2, null);
             g2.dispose();
         }
     }
@@ -470,7 +522,7 @@ public class Renderer {
         g.drawString(text, x, y);
     }
 
-    private BufferedImage tintImage(BufferedImage src) {
+    private BufferedImage tintImageRed(BufferedImage src) {
         BufferedImage tinted = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TRANSLUCENT);
         Graphics2D g = tinted.createGraphics();
         g.drawImage(src, 0, 0, null);
@@ -483,8 +535,8 @@ public class Renderer {
         return tinted;
     }
 
-    private BufferedImage getFlashedFrame(BufferedImage src) {
-        return tintedCache.computeIfAbsent(src, this::tintImage);
+    private BufferedImage getRedFrame(BufferedImage src) {
+        return tintedCacheRed.computeIfAbsent(src, this::tintImageRed);
     }
 
 }

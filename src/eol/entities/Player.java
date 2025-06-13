@@ -51,6 +51,7 @@ public class Player extends Character {
             state = State.ATTACK;
         } else if (getCombatComponent().getJustAttacked()) {
             state = State.ATTACK;
+            anims.play("attack", false);
         } else if (!getMovementComponent().isGrounded()) {
             state = State.JUMP;
         } else if (getMovementComponent().getVelocity().getX() != 0f) {
