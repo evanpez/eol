@@ -61,7 +61,7 @@ public class Game {
         player = new Player(new Vector2(400, 468), new Vector2(-16, -32), 32, 64, new StatsComponent(5, 20, 5, 5), playerType, playerWeapon);
         entityManager.forceAddEntity(player);
         SaveManager.saveGameState(1, player);
-        initializeSystems();
+        initializeSystems(1);
         AudioManager.getInstance().stopMusic();
         AudioManager.getInstance().playMusic("songOne");
         startGame();
@@ -77,7 +77,7 @@ public class Game {
         player = new Player(new Vector2(400, 468), new Vector2(-16, -32), 32, 64, gs.stats, gs.playerType, gs.weapon);
         player.getHealthComponent().setCurrentHealth(gs.currentHealth);
         entityManager.forceAddEntity(player);
-        initializeSystems();
+        initializeSystems(gs.wave);
 
         if (gs.wave > 5) {
             SupportAlly sup = new SupportAlly(new Vector2(100, 500), new Vector2(-16, -32), 32, 64, entityManager, new StatsComponent(1, 1, 1, 1));
@@ -105,12 +105,19 @@ public class Game {
             AudioManager.getInstance().playMusic("songOne");
         }
 
-        waveManager.setWave(gs.wave);
-        entitySpawner.prepareWave(gs.wave);
+        if (gs.wave == 20) {
+            StatsComponent stats = player.getStatsComponent();
+            int health = (stats.getStrength() + stats.getDexterity()) * 3;
+            int strength = player.getStatsComponent().getHealth() / 2;
+            Boss boss = new Boss(new Vector2(400, -100), new Vector2(-42.5f, -47), 85, 94, entityManager, new StatsComponent(health, 1, strength, 1));
+            entityManager.addEntity(boss);
+        } else {
+           entitySpawner.prepareWave(gs.wave); 
+        }
         startGame();
     }
 
-    public void initializeSystems() {
+    public void initializeSystems(int wave) {
         inputHandler = new InputHandler();
         AudioManager.getInstance().stopMusic();
         AudioManager.getInstance().playMusic("songOne");
@@ -120,7 +127,7 @@ public class Game {
 
         lootManager = new LootManager();
         entitySpawner = new EntitySpawner(entityManager);
-        waveManager = new WaveManager(entitySpawner, entityManager);
+        waveManager = new WaveManager(entitySpawner, entityManager, wave);
         renderer = new Renderer(entityManager, waveManager);
         itemPanel = new ItemPanel(player);
         weaponPanel = new WeaponPanel(player);

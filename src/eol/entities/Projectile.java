@@ -26,6 +26,7 @@ public class Projectile extends GameEntity {
     private boolean alive;
     private Set<Enemy> enemiesHit = new HashSet<>();
     private BufferedImage[] frames;
+    private boolean large = false;
 
     public Projectile(Vector2 position, Vector2 offset, int width, int height, Vector2 velocity, int damage, Character owner, EntityManager entityManager) {
         super(position, offset, width, height);
@@ -33,6 +34,53 @@ public class Projectile extends GameEntity {
         this.damage = damage;
         this.owner = owner;
         this.entityManager = entityManager;
+        player = entityManager.getPlayer();
+        lifeSpan = 10;
+        alive = true;
+        anims = new AnimationComponent();
+
+        if (owner == player && player.getWeapon() instanceof FireSpell) {
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("black_flame_projectile_" + i);
+            }
+        } else if (owner == player && player.getWeapon() instanceof StormSpell){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("ash_projectile_" + i);
+            }
+        } else if (owner instanceof RangedEnemy){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("projectile_" + i);
+            }
+        } else if (owner instanceof Boss){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("boss_projectile_" + i);
+            }
+        } else if (owner instanceof SupportAlly){
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("support_projectile_" + i);
+            }
+        } else {
+            frames = new BufferedImage[6];
+            for (int i = 0; i < 6; i++) {
+                frames[i] = SpriteManager.getInstance().getSprite("mage_projectile_" + i);
+            }
+        }
+
+        anims.addAnimation("shoot", new Animator(frames, 0.1f));
+    }
+
+    public Projectile(Vector2 position, Vector2 offset, int width, int height, Vector2 velocity, int damage, Character owner, EntityManager entityManager, boolean large) {
+        super(position, offset, width, height);
+        this.velocity = velocity;
+        this.damage = damage;
+        this.owner = owner;
+        this.entityManager = entityManager;
+        this.large = large;
         player = entityManager.getPlayer();
         lifeSpan = 10;
         alive = true;
@@ -128,6 +176,10 @@ public class Projectile extends GameEntity {
         setPosition(position.add(displacement));
 
         anims.update(deltaTime);
+    }
+
+    public boolean isLarge() {
+        return large;
     }
 
 }

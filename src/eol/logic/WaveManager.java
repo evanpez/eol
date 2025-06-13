@@ -21,16 +21,21 @@ public class WaveManager {
     private Set<Integer> triggeredWaves;
     private boolean bossSpawned;
 
-    public WaveManager(EntitySpawner spawner, EntityManager entityManager) {
+    public WaveManager(EntitySpawner spawner, EntityManager entityManager, int currentWave) {
         this.spawner = spawner;
         this.entityManager = entityManager;
         this.player = entityManager.getPlayer();
-        currentWave = 1;
+        this.currentWave = currentWave;
         countdown = 3.0f;
         waveEnded = false;
         bossSpawned = false;
         triggeredWaves = new HashSet<>();
-        spawner.prepareWave(currentWave);
+        if (currentWave < 20) {
+            spawner.prepareWave(currentWave);
+        } else {
+            bossSpawned = true;
+            triggeredWaves.add(20);
+        }
     }
 
     public void update(float deltaTime) {
@@ -49,7 +54,9 @@ public class WaveManager {
         if (countdown <= 0) {
             currentWave++;
             SaveManager.saveGameState(currentWave, player);
-            spawner.prepareWave(currentWave);
+            if (currentWave != 20) {
+                spawner.prepareWave(currentWave);
+            }
             waveEnded = false;
             countdown = 3.0f;
         }

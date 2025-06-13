@@ -5,6 +5,7 @@ import eol.ui.GameOver;
 import eol.ui.ItemPanel;
 import eol.ui.WeaponPanel;
 
+import java.util.List;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ public class GameLoop implements Runnable {
     /*
      * other objects
      */
+    private boolean giveRandomItem = true;
     private boolean itemPanelShown = false;
     private boolean weaponPanelShown = false;
     private int lastWave = 0;
@@ -152,6 +154,13 @@ public class GameLoop implements Runnable {
             return;
         }
 
+        // offence ally ability
+        if (waveManager.getWave() == 10 && giveRandomItem) {
+            List<Item> items = lootManager.chooseItems();
+            items.get(0).applyStats(player, lootManager);
+            giveRandomItem = false;
+        }
+
         Vector2 direction = inputHandler.getDirectionalInput();
         player.getMovementComponent().move(direction);
 
@@ -159,10 +168,12 @@ public class GameLoop implements Runnable {
             player.getMovementComponent().jump();
         }
 
+        /*
         if (inputHandler.isKeyPressed(KeyEvent.VK_M)) {
             debugMode = !debugMode;
             gamePanel.setDebugMode(debugMode);
         }
+        */
 
         if (inputHandler.isKeyPressed(KeyEvent.VK_K)) {
             stop();
@@ -170,6 +181,7 @@ public class GameLoop implements Runnable {
             game.showMainMenu();
         }
 
+        /*
         if (inputHandler.isKeyPressed(KeyEvent.VK_Q)) {
             weaponIndex++;
             if (weaponIndex > 8) weaponIndex = 0;
@@ -185,6 +197,7 @@ public class GameLoop implements Runnable {
                 case 8 -> player.setWeapon(new LightCannon());
             }
         }
+        */
 
         for (GameEntity e : entityManager.getEntities()) {
             if (e instanceof Character) {
