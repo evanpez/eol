@@ -154,8 +154,15 @@ public class Renderer {
             double angle = Math.atan2(vel.getY(), vel.getX()) + Math.PI / 2;
 
             // scaling factors
-            double sx = 0.6;
-            double sy = 0.6;
+            double sx, sy;
+            if (proj.isLarge()) {
+                sx = 2.4;
+                sy = 2.4;
+            } else {
+                sx = 0.6;
+                sy = 0.6;
+            }
+            
 
             Graphics2D g2 = (Graphics2D) g.create();
             int cx = bounds.x + bounds.width / 2;

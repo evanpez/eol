@@ -174,12 +174,12 @@ public class MainMenu {
                 instructionsLabel.setBounds(0, 10, 1000, 100);
                 instructionsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-                controlsLabel = new JLabel("<html>Controls:<br>Use the arrow keys to move,or W A S D.<br>Press X or P to perform an attack.</html>");
+                controlsLabel = new JLabel("<html>Controls:<br>Use the arrow keys to move,or W A S D.<br>Press X or P to perform an attack.<br>Press K to return to the main menu</html>");
                 controlsLabel.setFont(new Font("Martian Mono", Font.BOLD, 25));
                 controlsLabel.setForeground(Color.WHITE);
                 controlsLabel.setBounds(10, 100, 900, 300);
 
-                gameplayLabel = new JLabel("<html>Gameplay:<br>1. Select either Knight or Mage at the beginning to continue. The classes affect the weapon choices later in the game.<br>2. Defeat waves of enemies to progress through the game.<br>3. Choose items that make you stronger by changing your stats (based on the descrption) permanently or temporarily.<br>4. Get weapons or spells and equip them if it matches your playstyle.<br>5. Defeat the boss at wave 20 to win<html>");
+                gameplayLabel = new JLabel("<html>Gameplay:<br>1. Select either Knight or Mage at the beginning to continue. The classes affect the weapon choices later in the game.<br>2. Defeat waves of enemies to progress through the game.<br>3. Choose items that make you stronger by changing your stats (based on the descrption) permanently or temporarily.<br>4. Get weapons or spells and equip them if it matches your playstyle.<br>5. Allies will spawn at certain waves to support you with unique abilities<br>6. Defeat the boss at wave 20 to win<html>");
                 gameplayLabel.setFont(new Font("Martian Mono", Font.BOLD, 25));
                 gameplayLabel.setForeground(Color.WHITE);
                 gameplayLabel.setBounds(10, 300, 900, 400);

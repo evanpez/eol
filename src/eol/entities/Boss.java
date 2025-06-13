@@ -28,6 +28,7 @@ public class Boss extends Enemy {
     private boolean dead = false;
     private boolean gameEnd = false;
     private float deathTimer = 5.0f;
+    private float cornerTimer = 3.0f;
     private AnimationComponent anims = new AnimationComponent();
 
     private float angleStep = 0;
@@ -72,6 +73,16 @@ public class Boss extends Enemy {
             stunInterval = 7.0f;
             rising = false;
             return;
+        }
+
+        if (player.getPosition().getX() > 650 || player.getPosition().getX() < 150) {
+            cornerTimer -= deltaTime;
+            if (cornerTimer <= 0) {
+                meteorShot(deltaTime, 800f);
+                cornerTimer = 3.0f;
+            }
+        } else {
+            cornerTimer = 3.0f;
         }
 
         checkPhaseTransition();
@@ -190,6 +201,17 @@ public class Boss extends Enemy {
         entityManager.addEntity(new Projectile(spawnPos, offset, 10, 10, vel.multiply(-1), combat.calculateDamage(), this, entityManager));
         entityManager.addEntity(new Projectile(spawnPos, offset, 10, 10, vel, combat.calculateDamage(), this, entityManager));
         AudioManager.getInstance().playSound("mage_shoot");
+    }
+
+    private void meteorShot(float deltaTime, float speed) {
+
+        Vector2 origin = new Vector2(player.getPosition().getX(), player.getPosition().getY() -700f);
+
+        Vector2 dir = Vector2.down;
+
+        Vector2 vel = dir.multiply(speed);
+        entityManager.addEntity(new Projectile(origin, offset, 100, 100, vel.multiply(-1), combat.calculateDamage() * 2, this, entityManager, true));
+        AudioManager.getInstance().playSound("fire_blast");
     }
 
     private void stun(float deltaTime) {
